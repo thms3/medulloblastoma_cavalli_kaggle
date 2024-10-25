@@ -1,0 +1,10 @@
+# data, docs, img
+*.csv
+*.png
+*.pdf
+
+# folder
+data/
+docs/
+
+
