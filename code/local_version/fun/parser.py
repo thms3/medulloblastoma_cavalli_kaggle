@@ -3,13 +3,14 @@
 
 """
 Project: Medulloblastoma Cavalli Kaggle Project
-Description: Class to parse the data
+Description: Class to parse the data to local_version
 Author: Thomas Neff
-Date: 2024-10-25 23:25:08
+Date:  2024-11-01 11:57:33
 """
 
 # import lib
-import pandas as pd
+#import pandas as pd
+import modin.pandas as pd
 import numpy as np
 import os
 from collections import OrderedDict
