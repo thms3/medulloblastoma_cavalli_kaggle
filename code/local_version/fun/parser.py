@@ -43,7 +43,7 @@ class Data():
         '''
         self.meta=meta
 
-    def add_exp_mat(self, path_exp_mat:str, **kwargs):
+    def add_exp_mat(self, path_exp_mat:str,inplace:bool=False, **kwargs):
         '''
         path_exp_mat: (str) RNA expression matrix pathway
         '''
@@ -55,9 +55,12 @@ class Data():
         kwargs.setdefault('sep','\t')
         kwargs.setdefault('on_bad_lines','warn')
 
-        self.exp_mat=pd.read_csv(path_exp_mat,**kwargs)
+        if inplace:
+            return pd.read_csv(path_exp_mat,**kwargs)
+        else:
+            self.exp_mat=pd.read_csv(path_exp_mat,**kwargs)
 
-    def add_meta(self, path_meta:str, **kwargs):
+    def add_meta(self, path_meta:str,inplace:bool=False,**kwargs):
         '''
         Read the metadata and fill to self.meta instance
 
@@ -67,7 +70,10 @@ class Data():
         if not os.path.exists(path_meta):
             raise ValueError(f"File {path_meta} does not exist")
 
-        self.meta=pd.read_csv(path_meta,**kwargs)
+        if inplace:
+            return pd.read_csv(path_meta,**kwargs)
+        else:
+            self.meta=pd.read_csv(path_meta,**kwargs)
 
     def add_genes_name(self,genes_name:list=[],exp_mat:pd.DataFrame=None,inplace:bool=True) -> pd.DataFrame:
         '''
