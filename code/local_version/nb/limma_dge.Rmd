@@ -1,0 +1,72 @@
+---
+title: "Limma_DEG"
+author: "Thomas Neff"
+date: "2024-12-04"
+output: html_document
+---
+
+```{r load lib}
+library(limma)
+library(ggplot2)
+```
+
+```{r path data}
+path_data = "/home/thomas/Documents/git/medulloblastoma_cavalli_kaggle/data/in/protein_coding/"
+path_mat_expr = file.path(path_data,"GSE85217_M_exp_763_MB_SubtypeStudy_TaylorLab_protein_coding.csv")
+path_meta = file.path(path_data,"GSE85217_Cavalli_subgroups_information_protein_coding.csv")
+```
+
+```{r read data}
+mat_expr<-t(read.csv(path_mat_expr,row.names = 1))
+metadata<-read.csv(path_meta,row.names = 1)
+```
+
+```{r design matrix & fit}
+design<-model.matrix(~0+Subgroup,data = metadata)
+colnames(design)<-gsub("^Subgroup", "", colnames(design))
+
+fit <- lmFit(mat_expr, design)
+```
+
+
+```{r contrast matrix}
+contrast_matrix<-makeContrasts(WNT_vs_all = WNT - ((Group3 + Group4 + SHH) / 3), 
+                               SHH_vs_all = SHH - ((Group3 + Group4 + WNT) / 3),
+                               Group3_vs_all = Group3 - ((SHH + Group4 + WNT) / 3),
+                               Group4_vs_all = Group4 - ((SHH + Group3 + WNT) / 3),
+                               levels = design)
+```
+
+```{r fit2}
+fit2 <- contrasts.fit(fit, contrast_matrix)
+fit2 <- eBayes(fit2)
+```
+
+```{r toptable}
+deg_WNT<-topTable(fit2, coef = "WNT_vs_all", number = Inf, adjust = "BH", p.value = 0.01)
+deg_WNT<-deg_WNT[abs(deg_WNT$logFC)>2,]
+
+deg_SHH<-topTable(fit2, coef = "SHH_vs_all", number = Inf, adjust = "BH", p.value = 0.01)
+deg_SHH<-deg_SHH[abs(deg_SHH$logFC)>2,]
+
+deg_Group3<-topTable(fit2, coef = "Group3_vs_all", number = Inf, adjust = "BH", p.value = 0.01)
+deg_Group3<-deg_Group3[abs(deg_Group3$logFC)>2,]
+
+deg_Group4<-topTable(fit2, coef = "Group4_vs_all", number = Inf, adjust = "BH", p.value = 0.01)
+deg_Group4<-deg_Group4[abs(deg_Group4$logFC)>2,]
+```
+
+```{r}
+deg_WNT
+deg_SHH
+deg_Group3
+deg_Group4
+```
+
+```{r}
+deg_WNT
+
+```
+
+
+
